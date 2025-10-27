@@ -35,7 +35,9 @@ if args.alone:
     week_of_year = date.isocalendar()[1]
     days_in_month = calendar.monthrange(date.year, date.month)[1]
     day_of_week = date.strftime('%A')
-    print(f"Date - Day of year: {day_of_year}, Week of year: {week_of_year}, Days in month: {days_in_month}, Day of week: {day_of_week}")
+    current_date = datetime.now().date()
+    age_years, _, _ = calculate_difference(date, current_date)
+    print(f"Date - Day of year: {day_of_year}, Week of year: {week_of_year}, Days in month: {days_in_month}, Day of week: {day_of_week}, Age: {age_years}")
 elif args.start and args.end:
     start_str = ' '.join(args.start)
     end_str = ' '.join(args.end)
