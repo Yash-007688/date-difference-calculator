@@ -30,3 +30,13 @@ Add `-d` flag for details.
 ```
 python app.py -s 1 January 2020 -e 1 January 2021 -d
 ```
+
+### Display calendar and select a date:
+```
+python app.py -c <year>
+```
+
+Example:
+```
+python app.py -c 2023
+```

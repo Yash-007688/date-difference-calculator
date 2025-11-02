@@ -1,6 +1,13 @@
 import argparse
 from datetime import datetime
 import calendar
+import time
+
+def parse_date(date_str):
+    try:
+        return datetime.strptime(date_str, '%d %B %Y').date()
+    except ValueError:
+        return datetime.strptime(date_str, '%d %b %Y').date()
 
 def calculate_difference(start_date, end_date):
     years = end_date.year - start_date.year
@@ -25,12 +32,37 @@ parser.add_argument('-s', '--start', nargs='+', help='Start date: day month year
 parser.add_argument('-e', '--end', nargs='+', help='End date: day month year')
 parser.add_argument('-d', '--details', action='store_true', help='Show detailed information for dates')
 parser.add_argument('-a', '--alone', nargs='+', help='Single date: day month year')
+parser.add_argument('-c', '--calendar', type=int, help='Display calendar for the given year and select a date')
 
 args = parser.parse_args()
 
-if args.alone:
-    date_str = ' '.join(args.alone)
-    date = datetime.strptime(date_str, '%d %B %Y').date()
+if args.calendar:
+    year = args.calendar
+    cal = calendar.TextCalendar()
+    print(f"Calendar for {year}:")
+    for month in range(1,13):
+        print(cal.formatmonth(year, month))
+        print()
+        time.sleep(0.2)  # Animation effect
+    month = int(input("Enter month (1-12): "))
+    print(cal.formatmonth(year, month))
+    day = int(input("Enter day: "))
+    selected_date = datetime(year, month, day).date()
+    print(f"Selected date: {selected_date}")
+    day_of_year = selected_date.timetuple().tm_yday
+    week_of_year = selected_date.isocalendar()[1]
+    days_in_month = calendar.monthrange(year, month)[1]
+    day_of_week = selected_date.strftime('%A')
+    current_date = datetime.now().date()
+    age_years, _, _ = calculate_difference(selected_date, current_date)
+    print(f"Date - Day of year: {day_of_year}, Week of year: {week_of_year}, Days in month: {days_in_month}, Day of week: {day_of_week}, Age: {age_years}")
+elif args.alone:
+    if len(args.alone) == 1:
+        date_str = args.alone[0]
+        date = datetime.strptime(date_str, '%d/%m/%Y').date()
+    else:
+        date_str = ' '.join(args.alone)
+        date = parse_date(date_str)
     day_of_year = date.timetuple().tm_yday
     week_of_year = date.isocalendar()[1]
     days_in_month = calendar.monthrange(date.year, date.month)[1]
@@ -39,11 +71,16 @@ if args.alone:
     age_years, _, _ = calculate_difference(date, current_date)
     print(f"Date - Day of year: {day_of_year}, Week of year: {week_of_year}, Days in month: {days_in_month}, Day of week: {day_of_week}, Age: {age_years}")
 elif args.start and args.end:
-    start_str = ' '.join(args.start)
-    end_str = ' '.join(args.end)
-
-    start_date = datetime.strptime(start_str, '%d %B %Y').date()
-    end_date = datetime.strptime(end_str, '%d %B %Y').date()
+    if len(args.start) == 1:
+        start_date = datetime.strptime(args.start[0], '%d/%m/%Y').date()
+    else:
+        start_str = ' '.join(args.start)
+        start_date = parse_date(start_str)
+    if len(args.end) == 1:
+        end_date = datetime.strptime(args.end[0], '%d/%m/%Y').date()
+    else:
+        end_str = ' '.join(args.end)
+        end_date = parse_date(end_str)
 
     years, months, days = calculate_difference(start_date, end_date)
     print(f"Years: {years}, Months: {months}, Days: {days}")
